@@ -46,7 +46,7 @@ app.post(ROUTE, (req, res) => {
   const query = 'INSERT INTO students VALUES(?, ?, ?)';
   const {id, firstName, lastName} = req.body;
   database.query(query, [id, firstName, lastName], (err, result) => {
-    if (err) throw err;
+    if (err) res.status(400).json(err);
     res.status(201).json(result);
   });
 });
@@ -56,7 +56,7 @@ app.put(ROUTE, (req, res) => {
   const query = 'UPDATE students SET firstName = ?, lastName = ? WHERE id = ?';
   const {id, firstName, lastName} = req.body;
   database.query(query, [firstName, lastName, id], (err, result) => {
-    if (err) throw err;
+    if (err) res.status(400).json(err);
     res.status(200).json(result);
   });
 });
@@ -66,7 +66,7 @@ app.delete(ROUTE, (req, res) => {
   const query = 'DELETE FROM students WHERE id = ?';
   const {id} = req.body;
   database.query(query, [id], (err, result) => {
-    if (err) throw err;
+    if (err) res.status(400).json(err);
     res.status(200).json(result);
   });
 });
