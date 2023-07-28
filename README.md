@@ -23,4 +23,7 @@ Im using mysql for the database with a students table which consists of 3 column
 
 - Add a darkmode switch
 - Add a search bar to search for a specific student
--
+
+\*\* bugs
+
+- Updating a student doesnt auto capitalize the first letter of the name
