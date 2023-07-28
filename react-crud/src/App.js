@@ -13,19 +13,7 @@ function App() {
     fetch(URL)
       .then((res) => res.json())
       .then((data) => setStudents(data));
-  }, []);
-
-  useEffect(() => {
-    fetch(URL)
-      .then((res) => res.json())
-      .then((data) => setStudents(data));
   }, [students]);
-
-  const handleGetStudents = () => {
-    fetch(URL)
-      .then((res) => res.json())
-      .then((data) => setStudents(data));
-  };
 
   const handleAdd = () => {
     const id = document.getElementById("id").value;
@@ -46,6 +34,18 @@ function App() {
       });
   };
 
+  const handleDelete = (id) => {
+    fetch(URL, {
+      method: "DELETE",
+      headers: HEADERS,
+      body: JSON.stringify({ id }),
+    })
+    .then((res) => {
+      const updatedStudents = students.filter((student) => student.id !== id);
+      setStudents(updatedStudents);
+    })
+  }
+
   return (
     <div className="App">
       <h1>React CRUD</h1>
@@ -65,7 +65,7 @@ function App() {
               <td>{student.firstName}</td>
               <td>{student.lastName}</td>
               <td>
-                <button className="btn btn-danger">Delete</button>
+                <button className="btn btn-danger" onClick={() => handleDelete(student.id)}>Delete</button>
                 <button className="btn btn-warning">Update</button>
               </td>
             </tr>
@@ -103,9 +103,6 @@ function App() {
           </tr>
         </tbody>
       </table>
-      <button className="btn btn-primary" onClick={handleGetStudents}>
-        GET
-      </button>
     </div>
   );
 }
