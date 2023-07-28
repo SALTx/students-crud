@@ -34,8 +34,8 @@ function addStudent(id, firstName, lastName) {
       getStudents();
     },
     error: function (err) {
-      console.log(err);
-      alert("Error adding student: " + err);
+      const errorCode = JSON.parse(err.responseText).code;
+      alert("Error adding student: " + errorCode);
     }
   });
 }
@@ -55,8 +55,9 @@ function updateStudent(id, firstName, lastName) {
       students[index] = data;
       getStudents();
     },
-    error: function (xhr, status, error) {
-      alert("Error: " + error);
+    error: function (err) {
+      const errorCode = JSON.parse(err.responseText).code;
+      alert("Error updating student: " + errorCode);
     }
   });
 }
@@ -74,13 +75,14 @@ function deleteStudent(id) {
       students.splice(index, 1);
       getStudents();
     },
-    error: function (xhr, status, error) {
-      alert("Error: " + error);
+    error: function (err) {
+      const errorCode = JSON.parse(err.responseText).code;
+      alert("Error deleting student: " + errorCode);
     }
   });
 }
 
-//! render
+//* render
 function renderTable() {
   tbody.html("");
   students.forEach((student) => {
@@ -90,17 +92,17 @@ function renderTable() {
                 <td>${student.firstName}</td>
                 <td>${student.lastName}</td>
                 <td>
-                    <button id="delete" class="btn btn-danger delete" data-id="${student.id}">Delete</button>
-                    <button id="update" class="btn btn-warning update" data-id="${student.id}">Update</button>
+                    <button class="btn btn-danger delete mr-1" data-id="${student.id}">Delete</button>
+                    <button class="btn btn-warning update ml-1" data-id="${student.id}">Update</button>
                 </td>
             </tr>
         `);
   });
   tbody.append(`
         <tr>
-            <td><input id="id" type="text" class="form-control" placeholder="id"></td>
-            <td><input id="firstName" type="text" class="form-control" placeholder="first name"></td>
-            <td><input id="lastName" type="text" class="form-control" placeholder="last name"></td>
+            <td><input id="id" type="text" class="form-control" placeholder="ID"></td>
+            <td><input id="firstName" type="text" class="form-control" placeholder="First name"></td>
+            <td><input id="lastName" type="text" class="form-control" placeholder="Last name"></td>
             <td><button id="add" class="btn btn-success">Add</button></td>
         </tr>
     `);
@@ -108,14 +110,13 @@ function renderTable() {
 
 //! Delete student
 tbody.on("click", ".delete", function () {
-  console.log("Deleting student with id: " + $(this).attr("data-id") + "...");
+  console.log("Deleting student with ID: " + $(this).attr("data-id") + "...");
   let id = $(this).attr("data-id");
   deleteStudent(id);
 });
 
 //! Update student
 tbody.on("click", ".update", function () {
-  // turn the row into an input form
   let id = $(this).attr("data-id");
   let row = $(this).parent().parent();
   let firstName = row.find("td:nth-child(2)").text();
@@ -151,20 +152,26 @@ tbody.on("click", "#add", function () {
   let firstName = $("#firstName").val();
   let lastName = $("#lastName").val();
 
-  // validate id
+  // Validate ID to be 8 characters long and can only contain letters and numbers
   if (!/^[a-zA-Z0-9]{8}$/.test(id)) {
     alert("Error: ID must be 8 characters long and can only contain letters and numbers.");
     return;
   }
 
-  // validate first name
-  firstName = firstName.trim().toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
-  // if (firstName.length > 64) {
-  //   alert("Error: First name must be 64 characters or less.");
-  //   return;
-  // }
+  // Check that it is unique
+  if (students.some((student) => student.id == id)) {
+    alert("Error: ID must be unique.");
+    return;
+  }
 
-  // validate last name
+  // Validate first name
+  firstName = firstName.trim().toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  if (firstName.length > 64) {
+    alert("Error: First name must be 64 characters or less.");
+    return;
+  }
+
+  // Validate last name
   lastName = lastName.trim().toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
   if (lastName.length > 64) {
     alert("Error: Last name must be 64 characters or less.");
