@@ -16,9 +16,35 @@ function App() {
   }, [students]);
 
   const handleAdd = () => {
-    const id = document.getElementById("id").value;
-    const firstName = document.getElementById("firstName").value;
-    const lastName = document.getElementById("lastName").value;
+    let id = document.getElementById("id").value;
+    let firstName = document.getElementById("firstName").value;
+    let lastName = document.getElementById("lastName").value;
+
+    // Validate ID to be 8 characters long and can only contain letters and numbers
+    if (!/^[a-zA-Z0-9]{8}$/.test(id)) {
+      alert("ID must be 8 characters long and can only contain letters and numbers");
+      return;
+    }
+
+    // Check that it is unique
+    if (students.some((student) => student.id === id)) {
+      alert("ID must be unique");
+      return;
+    }
+
+    // Validate first name
+    firstName = firstName.trim().toLowerCase().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+    if(firstName.length === 0 || firstName.length > 64) {
+      alert("First name must be not null and less than 64 characters long");
+      return;
+    }
+
+    // Validate last name
+    lastName = lastName.trim().toLowerCase().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+    if(lastName.length === 0 || lastName.length > 64) {
+      alert("Last name must be not null and less than 64 characters long");
+      return;
+    }
 
     fetch(URL, {
       method: "POST",
