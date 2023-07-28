@@ -8,6 +8,7 @@ const HEADERS = {
 
 function App() {
   const [students, setStudents] = useState([]);
+  const [updatingStudent, setUpdatingStudent] = useState(null);
 
   useEffect(() => {
     fetch(URL)
@@ -72,6 +73,37 @@ function App() {
     })
   }
 
+    const handleUpdate = (id) => {
+    const student = students.find((student) => student.id === id);
+    setUpdatingStudent(student);
+  };
+
+  const handleSave = (id) => {
+    const row = document.getElementById(`row-${id}`);
+    const firstName = row.querySelector("#firstName").value;
+    const lastName = row.querySelector("#lastName").value;
+
+    fetch(URL, {
+      method: "PUT",
+      headers: HEADERS,
+      body: JSON.stringify({id, firstName, lastName }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const updatedStudents = students.map((student) =>
+          student.id === id ? data : student
+        );
+        setStudents(updatedStudents);
+        setUpdatingStudent(null);
+      })
+      .catch((error) => console.error(error));
+  };
+
+  const handleCancel = () => {
+    setUpdatingStudent(null);
+  };
+
+
   return (
     <div className="App">
       <h1>React CRUD</h1>
@@ -86,14 +118,61 @@ function App() {
         </thead>
         <tbody>
           {students.map((student) => (
-            <tr key={student.id}>
+            <tr key={student.id} id={`row-${student.id}`}>
               <td>{student.id}</td>
-              <td>{student.firstName}</td>
-              <td>{student.lastName}</td>
-              <td>
-                <button className="btn btn-danger" onClick={() => handleDelete(student.id)}>Delete</button>
-                <button className="btn btn-warning">Update</button>
-              </td>
+              {updatingStudent?.id === student.id ? (
+                <>
+                  <td>
+                    <input
+                      id="firstName"
+                      type="text"
+                      className="form-control"
+                      defaultValue={student.firstName}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      id="lastName"
+                      type="text"
+                      className="form-control"
+                      defaultValue={student.lastName}
+                    />
+                  </td>
+                  <td>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => handleSave(student.id)}
+                    >
+                      Save
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </button>
+                  </td>
+                </>
+              ) : (
+                <>
+                  <td>{student.firstName}</td>
+                  <td>{student.lastName}</td>
+                  <td>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleDelete(student.id)}
+                    >
+                      Delete
+                    </button>
+                    <button
+                      className="btn btn-warning"
+                      onClick={() => handleUpdate(student.id)}
+                    >
+                      Update
+                    </button>
+                  </td>
+                </>
+              )}
             </tr>
           ))}
           <tr>
