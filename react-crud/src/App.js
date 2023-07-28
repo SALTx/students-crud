@@ -10,12 +10,14 @@ function App() {
   const [students, setStudents] = useState([]);
   const [updatingStudent, setUpdatingStudent] = useState(null);
 
+  //! Get students
   useEffect(() => {
     fetch(URL)
       .then((res) => res.json())
       .then((data) => setStudents(data));
   }, [students]);
 
+  //! Add student
   const handleAdd = () => {
     let id = document.getElementById("id").value;
     let firstName = document.getElementById("firstName").value;
@@ -61,6 +63,7 @@ function App() {
       });
   };
 
+  //! Delete student
   const handleDelete = (id) => {
     fetch(URL, {
       method: "DELETE",
@@ -78,6 +81,7 @@ function App() {
     setUpdatingStudent(student);
   };
 
+  //! Save changes
   const handleSave = (id) => {
     const row = document.getElementById(`row-${id}`);
     const firstName = row.querySelector("#firstName").value;
@@ -99,11 +103,12 @@ function App() {
       .catch((error) => console.error(error));
   };
 
+  //! Cancel update
   const handleCancel = () => {
     setUpdatingStudent(null);
   };
 
-
+  //! Students table
   return (
     <div className="App">
       <h1>React CRUD</h1>
